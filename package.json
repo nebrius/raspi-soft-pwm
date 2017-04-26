@@ -18,6 +18,7 @@
   "scripts": {
     "prebuild": "tslint src/**/*.ts",
     "build": "tsc",
+    "preinstall": "sh ./script/pigpio.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
