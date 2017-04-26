@@ -1,0 +1,1046 @@
+From bd9807ce7c976c16253a287cccf560e6a6fffbb7 Mon Sep 17 00:00:00 2001
+From: Bryan Hughes <bryan@theoreticalideations.com>
+Date: Mon, 24 Apr 2017 23:33:54 -0500
+Subject: [PATCH] Upgraded lots of things to match recent changes in the
+ ecosystem
+
+---
+ .eslintrc               |  60 ------------------------
+ .gitignore              |   0
+ CHANGELOG.md            |   0
+ LICENSE                 |   2 +-
+ README.md               |  72 +++++++++++++++-------------
+ declarations/index.d.ts |  17 +++++++
+ dist/index.js           | 115 +++++++++++++++++++++++++++++++++++++++++++++
+ dist/index.js.map       |   1 +
+ gulpfile.js             |  54 ---------------------
+ index.js                |  85 ----------------------------------
+ install-pigpio.sh       |  51 --------------------
+ lib/index.js            | 121 ------------------------------------------------
+ package.json            |  26 +++++------
+ script/pigpio.sh        |  37 +++++++++++++++
+ src/index.ts            | 104 +++++++++++++++++++++++++++++++++++++++++
+ tsconfig.json           |  17 +++++++
+ tslint.json             |  56 ++++++++++++++++++++++
+ 17 files changed, 400 insertions(+), 418 deletions(-)
+ delete mode 100755 .eslintrc
+ mode change 100755 => 100644 .gitignore
+ mode change 100755 => 100644 CHANGELOG.md
+ mode change 100755 => 100644 LICENSE
+ mode change 100755 => 100644 README.md
+ create mode 100644 declarations/index.d.ts
+ create mode 100644 dist/index.js
+ create mode 100644 dist/index.js.map
+ delete mode 100755 gulpfile.js
+ delete mode 100755 index.js
+ delete mode 100644 install-pigpio.sh
+ delete mode 100755 lib/index.js
+ create mode 100644 script/pigpio.sh
+ create mode 100755 src/index.ts
+ create mode 100644 tsconfig.json
+ create mode 100644 tslint.json
+
+diff --git a/.eslintrc b/.eslintrc
+deleted file mode 100755
+index d53d18e..0000000
+--- a/.eslintrc
++++ /dev/null
+@@ -1,60 +0,0 @@
+-{
+-  "env": {
+-    "node": true,
+-    "es6": true
+-  },
+-  "ecmaFeatures": {
+-    "modules": true
+-  },
+-  "rules": {
+-    "eqeqeq": 0,
+-    "no-var": 2,
+-    "prefer-const": 2,
+-    "no-shadow": 2,
+-    "no-shadow-restricted-names": 2,
+-    "no-use-before-define": 2,
+-    "comma-dangle": [2, "never"],
+-    "no-cond-assign": [2, "always"],
+-    "no-constant-condition": 1,
+-    "no-dupe-keys": 2,
+-    "no-duplicate-case": 2,
+-    "no-empty": 2,
+-    "no-ex-assign": 2,
+-    "no-extra-boolean-cast": 1,
+-    "no-extra-semi": 2,
+-    "no-func-assign": 2,
+-    "no-irregular-whitespace": 2,
+-    "default-case": 2,
+-    "guard-for-in": 2,
+-    "no-floating-decimal": 2,
+-    "no-param-reassign": 2,
+-    "no-self-compare": 2,
+-    "no-sequences": 2,
+-    "no-throw-literal": 2,
+-    "radix": 2,
+-    "quotes": [2, "single", "avoid-escape"],
+-    "indent": [2, 2, { "SwitchCase": 1 }],
+-    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
+-    "comma-style": [2, "last"],
+-    "no-multiple-empty-lines": 2,
+-    "no-nested-ternary": 2,
+-    "one-var": [2, "never"],
+-    "padded-blocks": [2, "never"],
+-    "space-after-keywords": [2, "always"],
+-    "no-console": 0,
+-    "space-before-blocks": 2,
+-    "space-before-function-paren": [2, "never"],
+-    "spaced-comment": 2,
+-    "valid-jsdoc": [2, { "requireReturn": false }],
+-    "no-unreachable": 2,
+-    "no-unexpected-multiline": 2,
+-    "no-else-return": 2,
+-    "no-throw-literal": 2,
+-    "constructor-super": 2,
+-    "no-this-before-super": 2,
+-    "object-shorthand": [2, "always"],
+-    "no-loop-func": 0,
+-    "no-param-reassign": 0,
+-    "no-empty": 0
+-  }
+-}
+diff --git a/.gitignore b/.gitignore
+old mode 100755
+new mode 100644
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+old mode 100755
+new mode 100644
+diff --git a/LICENSE b/LICENSE
+old mode 100755
+new mode 100644
+index bd23294..179716b
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,6 +1,6 @@
+ The MIT License (MIT)
+ 
+-Copyright (c) 2014 Bryan Hughes <bryan@theoreticalideations.com>
++Copyright (c) 2016 Tiago Alves <tralves@gmail.com>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+diff --git a/README.md b/README.md
+old mode 100755
+new mode 100644
+index aae0929..576ecae
+--- a/README.md
++++ b/README.md
+@@ -3,30 +3,45 @@ Raspi SOFT PWM
+ 
+ [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/nebrius/raspi-io?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+ 
+-Raspi Soft PWM is part of the [Raspi.js suite](https://github.com/bryan-m-hughes/raspi) that provides software PWM through [pigpio](https://github.com/fivdi/pigpio).
++Raspi Soft PWM is part of the [Raspi.js suite](https://github.com/nebrius/raspi) that provides software PWM through [pigpio](https://github.com/fivdi/pigpio).
++
++If you have a bug report, feature request, or wish to contribute code, please be sure to check out the [Contributing Guide](blob/master/CONTRIBUTING.md).
+ 
+ ## Installation
+ 
++First, be sure that you have installed [raspi](https://github.com/nebrius/raspi).
++
++Install with NPM:
++
+ ```Shell
+ npm install raspi-soft-pwm
+ ```
+ 
++**Note:** this project is written in [TypeScript](http://www.typescriptlang.org/) and includes type definitions in the package.json file. This means that if you want to use it from TypeScript, you don't need to install a separate @types module.
++
+ ## Example Usage
+ 
++In TypeScript/ES6:
++
++```TypeScript
++import { init } from 'raspi';
++import { PWM } from 'raspi-pwm';
++
++init(() => {
++  const led = new PWM('GPIO22');
++  led.write(0.5); // 50% Duty Cycle, half brightness
++});
++```
++
++In JavaScript:
++
+ ```JavaScript
+-var raspi = require('raspi');
+-var SoftPWM = require('raspi-soft-pwm').SoftPWM;
+-
+-raspi.init(function() {
+-  var pwm = new SoftPWM('GPIO17');
+-  let value = 0;
+-  setInterval(() => {
+-    pwm.write(value);
+-    value++;
+-    if (value === pwm.range) {
+-      value = 0;
+-    }
+-  }, 10);
++const raspi = require('raspi');
++const pwm = require('raspi-pwm');
++
++raspi.init(() => {
++  const led = new pwm.PWM('GPIO22');
++  led.write(0.5); // 50% Duty Cycle, aka half brightness
+ });
+ ```
+ 
+@@ -34,7 +49,7 @@ raspi.init(function() {
+ 
+ The pins on the Raspberry Pi are a little complicated. There are multiple headers on some Raspberry Pis with extra pins, and the pin numbers are not consistent between Raspberry Pi board versions.
+ 
+-To help make it easier, you can specify pins in three ways. The first is to specify the pin by function, e.g. ```'GPIO18'```. The second way is to specify by pin number, which is specified in the form "P[header]-[pin]", e.g. ```'P1-7'```. The final way is specify the [Wiring Pi virtual pin number](http://wiringpi.com/pins/), e.g. ```7```. If you specify a number instead of a string, it is assumed to be a Wiring Pi number.
++To help make it easier, you can specify pins in three ways. The first is to specify the pin by function, e.g. `'GPIO18'`. The second way is to specify by pin number, which is specified in the form "P[header]-[pin]", e.g. `'P1-7'`. The final way is specify the [Wiring Pi virtual pin number](http://wiringpi.com/pins/), e.g. `7`. If you specify a number instead of a string, it is assumed to be a Wiring Pi number.
+ 
+ Be sure to read the [full list of pins](https://github.com/nebrius/raspi-io/wiki/Pin-Information) on the supported models of the Raspberry Pi.
+ 
+@@ -73,17 +88,12 @@ _Arguments_:
+         <tr>
+           <td>pin (optional)</td>
+           <td>Number | String</td>
+-          <td>The pin number or descriptor for the peripheral</td>
+-        </tr>
+-        <tr>
+-          <td>range (optional)</td>
+-          <td>Number</td>
+-          <td>Sets the range register in the PWM peripheral. This value controls how <em>many</em> clock cycles are used in one period. Please refer to the pigpio documentation of [Gpio.pwmRange(range)](https://github.com/fivdi/pigpio/blob/master/doc/gpio.md#pwmrangerange). *Default: 255*</td>
++          <td>The pin number or descriptor for the peripheral. Defaults to 1 (GPIO18, PWM0).</td>
+         </tr>
+         <tr>
+           <td>frequency (optional)</td>
+           <td>Number</td>
+-          <td>Sets the frequency in the PWM peripheral. Please refer to the pigpio documentation of [Gpio.pwmFrequency(frequency)](https://github.com/fivdi/pigpio/blob/master/doc/gpio.md#pwmfrequencyfrequency). *Default: 800*</td>
++          <td>The frequency, in Hz, of the PWM signal. Defaults to 50.</td>
+         </tr>
+       </table>
+     </td>
+@@ -94,17 +104,13 @@ _Arguments_:
+ 
+ #### frequency
+ 
+-A number representing the PWM frequency.
+-
+-#### range
+-
+-A number representing the PWM range.
++A number representing the frequency initialization value, in Hz. If a value for `frequency` was passed to the constructor, it is reflected back here. If no value for `frequency` was passed to the constructor, then this reflects the default frequency value of `50`.
+ 
+ ### Instance Methods
+ 
+-#### write(value)
++#### write(dutyCycle)
+ 
+-Sets the duty cycle for the PWM output.
++Sets the duty cycle for the PWM output, a floating point value between 0 and 1.
+ 
+ _Arguments_:
+ 
+@@ -117,15 +123,15 @@ _Arguments_:
+     </tr>
+   </thead>
+   <tr>
+-    <td>value</td>
++    <td>dutyCycle</td>
+     <td>Number</td>
+-    <td>The duty cycle for the PWM to set, must be between 0 and range</td>
++    <td>The duty cycle for the PWM to set, must be a floating point number between 0 and 1</td>
+   </tr>
+ </table>
+ 
+ _Returns_: None
+ 
+-Note: The PWM does not start outputting a signal until write is called for the first time.
++**Note:** The PWM does not start outputting a signal until write is called for the first time.
+ 
+ ## Credits
+ 
+@@ -137,7 +143,7 @@ License
+ 
+ The MIT License (MIT)
+ 
+-Copyright (c) 2016 Tiago Alves tralves@gmail.com
++Copyright (c) 2016 Tiago Alves <tralves@gmail.com>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+diff --git a/declarations/index.d.ts b/declarations/index.d.ts
+new file mode 100644
+index 0000000..c41e318
+--- /dev/null
++++ b/declarations/index.d.ts
+@@ -0,0 +1,17 @@
++import { Peripheral } from 'raspi-peripheral';
++export interface IConfig {
++    pin: number | string;
++    frequency?: number;
++    range?: number;
++}
++export declare class SoftPWM extends Peripheral {
++    private _pwm;
++    private _frequency;
++    private _range;
++    private _dutyCycle;
++    readonly frequency: number;
++    readonly range: number;
++    readonly dutyCycle: number;
++    constructor(config: number | string | IConfig);
++    write(dutyCycle: number): void;
++}
+diff --git a/dist/index.js b/dist/index.js
+new file mode 100644
+index 0000000..53c5c01
+--- /dev/null
++++ b/dist/index.js
+@@ -0,0 +1,115 @@
++/*
++The MIT License (MIT)
++
++Copyright (c) 2016 Tiago Alves <tralves@gmail.com>
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/
++"use strict";
++var __extends = (this && this.__extends) || (function () {
++    var extendStatics = Object.setPrototypeOf ||
++        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
++        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
++    return function (d, b) {
++        extendStatics(d, b);
++        function __() { this.constructor = d; }
++        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
++    };
++})();
++Object.defineProperty(exports, "__esModule", { value: true });
++var pigpio_1 = require("pigpio");
++var raspi_peripheral_1 = require("raspi-peripheral");
++var raspi_board_1 = require("raspi-board");
++var DEFAULT_FREQUENCY = 50;
++var DEFAULT_RANGE = 40000;
++var SoftPWM = (function (_super) {
++    __extends(SoftPWM, _super);
++    function SoftPWM(config) {
++        var _this = this;
++        var pin;
++        var frequency = DEFAULT_FREQUENCY;
++        var range = DEFAULT_RANGE;
++        if (typeof config === 'number' || typeof config === 'string') {
++            pin = config;
++        }
++        else if (typeof config === 'object') {
++            if (typeof config.pin === 'number' || typeof config.pin === 'string') {
++                pin = config.pin;
++            }
++            else {
++                throw new Error("Invalid pin \"" + config.pin + "\". Pin must a number or string");
++            }
++            if (typeof config.frequency === 'number') {
++                frequency = config.frequency;
++            }
++            if (typeof config.range === 'number') {
++                range = config.range;
++            }
++        }
++        else {
++            throw new Error('Invalid config, must be a number, string, or object');
++        }
++        _this = _super.call(this, pin) || this;
++        var gpioPin = raspi_board_1.getGpioNumber(pin);
++        if (gpioPin === null) {
++            throw new Error("Internal error: " + pin + " was parsed as a valid pin, but couldn't be resolved to a GPIO pin");
++        }
++        _this._frequency = frequency;
++        _this._range = range;
++        _this._dutyCycle = 0;
++        _this._pwm = new pigpio_1.Gpio(gpioPin, { mode: pigpio_1.Gpio.OUTPUT });
++        _this._pwm.pwmFrequency(frequency);
++        _this._pwm.pwmRange(range);
++        return _this;
++    }
++    Object.defineProperty(SoftPWM.prototype, "frequency", {
++        get: function () {
++            return this._frequency;
++        },
++        enumerable: true,
++        configurable: true
++    });
++    Object.defineProperty(SoftPWM.prototype, "range", {
++        get: function () {
++            return this._range;
++        },
++        enumerable: true,
++        configurable: true
++    });
++    Object.defineProperty(SoftPWM.prototype, "dutyCycle", {
++        get: function () {
++            return this._dutyCycle;
++        },
++        enumerable: true,
++        configurable: true
++    });
++    SoftPWM.prototype.write = function (dutyCycle) {
++        if (!this.alive) {
++            throw new Error('Attempted to write to a destroyed peripheral');
++        }
++        if (typeof dutyCycle !== 'number' || dutyCycle < 0 || dutyCycle > 1) {
++            throw new Error("Invalid PWM duty cycle \"" + dutyCycle + "\"");
++        }
++        this._dutyCycle = dutyCycle;
++        this._pwm.pwmWrite(Math.round(this._dutyCycle * this._range));
++    };
++    return SoftPWM;
++}(raspi_peripheral_1.Peripheral));
++exports.SoftPWM = SoftPWM;
++//# sourceMappingURL=index.js.map
+\ No newline at end of file
+diff --git a/dist/index.js.map b/dist/index.js.map
+new file mode 100644
+index 0000000..eb3df3a
+--- /dev/null
++++ b/dist/index.js.map
+@@ -0,0 +1 @@
++{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
+diff --git a/gulpfile.js b/gulpfile.js
+deleted file mode 100755
+index 08ccbb3..0000000
+--- a/gulpfile.js
++++ /dev/null
+@@ -1,54 +0,0 @@
+-/*
+-The MIT License (MIT)
+-
+-Copyright (c) 2014 Bryan Hughes <bryan@theoreticalideations.com>
+-
+-Permission is hereby granted, free of charge, to any person obtaining a copy
+-of this software and associated documentation files (the "Software"), to deal
+-in the Software without restriction, including without limitation the rights
+-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-copies of the Software, and to permit persons to whom the Software is
+-furnished to do so, subject to the following conditions:
+-
+-The above copyright notice and this permission notice shall be included in
+-all copies or substantial portions of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+-THE SOFTWARE.
+-*/
+-
+-var gulp = require('gulp');
+-var babel = require('gulp-babel');
+-var sourcemaps = require('gulp-sourcemaps');
+-var eslint = require('gulp-eslint');
+-var del = require('del');
+-
+-gulp.task('default', ['clean', 'lint'], function() {
+-  return gulp.src('index.js')
+-    .pipe(sourcemaps.init())
+-      .pipe(babel({
+-        modules: 'common'
+-      }))
+-    .pipe(sourcemaps.write())
+-    .pipe(gulp.dest('lib'));
+-});
+-
+-gulp.task('clean', function(cb) {
+-  del(['lib']).then(function() { cb(); });
+-});
+-
+-gulp.task('lint', function() {
+-  return gulp.src('index.js')
+-    .pipe(eslint())
+-    .pipe(eslint.format())
+-    .pipe(eslint.failOnError());
+-});
+-
+-gulp.task('watch', function () {
+-   gulp.watch('*.js', ['default']);
+-});
+\ No newline at end of file
+diff --git a/index.js b/index.js
+deleted file mode 100755
+index 38f6068..0000000
+--- a/index.js
++++ /dev/null
+@@ -1,85 +0,0 @@
+-/*
+-The MIT License (MIT)
+-
+-Copyright (c) 2014 Bryan Hughes <bryan@theoreticalideations.com>
+-
+-Permission is hereby granted, free of charge, to any person obtaining a copy
+-of this software and associated documentation files (the "Software"), to deal
+-in the Software without restriction, including without limitation the rights
+-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-copies of the Software, and to permit persons to whom the Software is
+-furnished to do so, subject to the following conditions:
+-
+-The above copyright notice and this permission notice shall be included in
+-all copies or substantial portions of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+-THE SOFTWARE.
+-*/
+-
+-import { Gpio } from 'pigpio';
+-import { Peripheral } from 'raspi-peripheral';
+-import { getPins } from 'raspi-board';
+-
+-const _pwm = Symbol();
+-const _range = Symbol();
+-const _frequency = Symbol();
+-
+-export class SoftPWM extends Peripheral {
+-  constructor(config) {
+-    if (typeof config == 'number' || typeof config == 'string') {
+-      config = { pin: config };
+-    }
+-    const { pin, frequency = 800, range = 255 } = config;
+-    if (typeof pin === 'undefined') {
+-      throw new Error('A pin must be specified');
+-    }
+-    super(pin);
+-    this[_range] = range;
+-    this[_frequency] = frequency;
+-    this[_pwm] = new Gpio(this.pinToGPIO(this.pins[0]), {mode: Gpio.OUTPUT});
+-    this[_pwm].pwmRange(range);
+-    this[_pwm].pwmFrequency(frequency);
+-  }
+-
+-  get range() {
+-    return this[_range];
+-  }
+-
+-  get frequency() {
+-    return this[_frequency];
+-  }
+-
+-  write(value) {
+-    if (!this.alive) {
+-      throw new Error('Attempted to write to a destroyed peripheral');
+-    }
+-    if (typeof value != 'number' || value < 0 || value > this[_range]) {
+-      throw new Error('Invalid PWM value ' + value);
+-    }
+-
+-    this[_pwm].analogWrite(Math.round(value));
+-  }
+-
+-  pinToGPIO(pin) {
+-    const pins = getPins()[pin].pins;
+-    const gpioRegex = /GPIO([\d]+)/;
+-
+-    let result;
+-    let i;
+-
+-    for (i = 0; i < pins.length; i++) {
+-      result = gpioRegex.exec(pins[i]);
+-      if (result !== null) {
+-        return parseInt(result[1],10);
+-      }
+-    }
+-    return null;
+-  }
+-
+-}
+diff --git a/install-pigpio.sh b/install-pigpio.sh
+deleted file mode 100644
+index 217725a..0000000
+--- a/install-pigpio.sh
++++ /dev/null
+@@ -1,51 +0,0 @@
+-#!/bin/sh
+-# The MIT License (MIT)
+-#
+-# Copyright (c) 2016 Tiago Alves <tralves@gmail.com>
+-#
+-# Permission is hereby granted, free of charge, to any person obtaining a copy
+-# of this software and associated documentation files (the "Software"), to deal
+-# in the Software without restriction, including without limitation the rights
+-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-# copies of the Software, and to permit persons to whom the Software is
+-# furnished to do so, subject to the following conditions:
+-#
+-# The above copyright notice and this permission notice shall be included in all
+-# copies or substantial portions of the Software.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-# SOFTWARE.
+-
+-# This script was based on Bryan Hughes' install-wiringpi.sh 
+-# (https://github.com/nebrius/raspi-wiringpi/blob/master/install-wiringpi.sh)
+-
+-CLONE_DIR=$(mktemp -d)
+-cd $CLONE_DIR
+-
+-# Check if Wiring Pi is already installed
+-if command -v pigpiod >/dev/null 2>&1
+-then
+-  echo "pigpio is already installed, skipping\n"
+-  exit 0
+-fi
+-
+-# Check if git is installed or not
+-if !(command -v git >/dev/null 2>&1)
+-then
+-  echo "You must install git before installing pigpio\n"
+-  exit 1
+-fi
+-
+-echo "\nDownloading pigpio...\n"
+-git clone https://github.com/joan2937/pigpio || { echo "Could not download pigpio\n"; exit 1; }
+-cd pigpio
+-
+-echo "\nBuilding pigpio. You may be asked for your root password.\n"
+-make
+-sudo make install|| { echo "Could not install pigpio\n"; exit 1; }
+-sudo rm -r $CLONE_DIR
+\ No newline at end of file
+diff --git a/lib/index.js b/lib/index.js
+deleted file mode 100755
+index 2fc8c20..0000000
+--- a/lib/index.js
++++ /dev/null
+@@ -1,121 +0,0 @@
+-/*
+-The MIT License (MIT)
+-
+-Copyright (c) 2014 Bryan Hughes <bryan@theoreticalideations.com>
+-
+-Permission is hereby granted, free of charge, to any person obtaining a copy
+-of this software and associated documentation files (the "Software"), to deal
+-in the Software without restriction, including without limitation the rights
+-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-copies of the Software, and to permit persons to whom the Software is
+-furnished to do so, subject to the following conditions:
+-
+-The above copyright notice and this permission notice shall be included in
+-all copies or substantial portions of the Software.
+-
+-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+-THE SOFTWARE.
+-*/
+-
+-'use strict';
+-
+-Object.defineProperty(exports, '__esModule', {
+-  value: true
+-});
+-
+-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+-
+-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+-
+-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+-
+-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+-
+-var _pigpio = require('pigpio');
+-
+-var _raspiPeripheral = require('raspi-peripheral');
+-
+-var _raspiBoard = require('raspi-board');
+-
+-var _pwm = Symbol();
+-var _range = Symbol();
+-var _frequency = Symbol();
+-
+-var SoftPWM = (function (_Peripheral) {
+-  _inherits(SoftPWM, _Peripheral);
+-
+-  function SoftPWM(config) {
+-    _classCallCheck(this, SoftPWM);
+-
+-    if (typeof config == 'number' || typeof config == 'string') {
+-      config = { pin: config };
+-    }
+-    var _config = config;
+-    var pin = _config.pin;
+-    var _config$frequency = _config.frequency;
+-    var frequency = _config$frequency === undefined ? 800 : _config$frequency;
+-    var _config$range = _config.range;
+-    var range = _config$range === undefined ? 255 : _config$range;
+-
+-    if (typeof pin === 'undefined') {
+-      throw new Error('A pin must be specified');
+-    }
+-    _get(Object.getPrototypeOf(SoftPWM.prototype), 'constructor', this).call(this, pin);
+-    this[_range] = range;
+-    this[_frequency] = frequency;
+-    this[_pwm] = new _pigpio.Gpio(this.pinToGPIO(this.pins[0]), { mode: _pigpio.Gpio.OUTPUT });
+-    this[_pwm].pwmRange(range);
+-    this[_pwm].pwmFrequency(frequency);
+-  }
+-
+-  _createClass(SoftPWM, [{
+-    key: 'write',
+-    value: function write(value) {
+-      if (!this.alive) {
+-        throw new Error('Attempted to write to a destroyed peripheral');
+-      }
+-      if (typeof value != 'number' || value < 0 || value > this[_range]) {
+-        throw new Error('Invalid PWM value ' + value);
+-      }
+-
+-      this[_pwm].analogWrite(Math.round(value));
+-    }
+-  }, {
+-    key: 'pinToGPIO',
+-    value: function pinToGPIO(pin) {
+-      var pins = (0, _raspiBoard.getPins)()[pin].pins;
+-      var gpioRegex = /GPIO([\d]+)/;
+-
+-      var result = undefined;
+-      var i = undefined;
+-
+-      for (i = 0; i < pins.length; i++) {
+-        result = gpioRegex.exec(pins[i]);
+-        if (result !== null) {
+-          return parseInt(result[1], 10);
+-        }
+-      }
+-      return null;
+-    }
+-  }, {
+-    key: 'range',
+-    get: function get() {
+-      return this[_range];
+-    }
+-  }, {
+-    key: 'frequency',
+-    get: function get() {
+-      return this[_frequency];
+-    }
+-  }]);
+-
+-  return SoftPWM;
+-})(_raspiPeripheral.Peripheral);
+-
+-exports.SoftPWM = SoftPWM;
+-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O3NCQXdCcUIsUUFBUTs7K0JBQ0Ysa0JBQWtCOzswQkFDckIsYUFBYTs7QUFFckMsSUFBTSxJQUFJLEdBQUcsTUFBTSxFQUFFLENBQUM7QUFDdEIsSUFBTSxNQUFNLEdBQUcsTUFBTSxFQUFFLENBQUM7QUFDeEIsSUFBTSxVQUFVLEdBQUcsTUFBTSxFQUFFLENBQUM7O0lBRWYsT0FBTztZQUFQLE9BQU87O0FBQ1AsV0FEQSxPQUFPLENBQ04sTUFBTSxFQUFFOzBCQURULE9BQU87O0FBRWhCLFFBQUksT0FBTyxNQUFNLElBQUksUUFBUSxJQUFJLE9BQU8sTUFBTSxJQUFJLFFBQVEsRUFBRTtBQUMxRCxZQUFNLEdBQUcsRUFBRSxHQUFHLEVBQUUsTUFBTSxFQUFFLENBQUM7S0FDMUI7a0JBQzZDLE1BQU07UUFBNUMsR0FBRyxXQUFILEdBQUc7b0NBQUUsU0FBUztRQUFULFNBQVMscUNBQUcsR0FBRztnQ0FBRSxLQUFLO1FBQUwsS0FBSyxpQ0FBRyxHQUFHOztBQUN6QyxRQUFJLE9BQU8sR0FBRyxLQUFLLFdBQVcsRUFBRTtBQUM5QixZQUFNLElBQUksS0FBSyxDQUFDLHlCQUF5QixDQUFDLENBQUM7S0FDNUM7QUFDRCwrQkFUUyxPQUFPLDZDQVNWLEdBQUcsRUFBRTtBQUNYLFFBQUksQ0FBQyxNQUFNLENBQUMsR0FBRyxLQUFLLENBQUM7QUFDckIsUUFBSSxDQUFDLFVBQVUsQ0FBQyxHQUFHLFNBQVMsQ0FBQztBQUM3QixRQUFJLENBQUMsSUFBSSxDQUFDLEdBQUcsaUJBQVMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQyxDQUFDLEVBQUUsRUFBQyxJQUFJLEVBQUUsYUFBSyxNQUFNLEVBQUMsQ0FBQyxDQUFDO0FBQ3pFLFFBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQyxRQUFRLENBQUMsS0FBSyxDQUFDLENBQUM7QUFDM0IsUUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDLFlBQVksQ0FBQyxTQUFTLENBQUMsQ0FBQztHQUNwQzs7ZUFmVSxPQUFPOztXQXlCYixlQUFDLEtBQUssRUFBRTtBQUNYLFVBQUksQ0FBQyxJQUFJLENBQUMsS0FBSyxFQUFFO0FBQ2YsY0FBTSxJQUFJLEtBQUssQ0FBQyw4Q0FBOEMsQ0FBQyxDQUFDO09BQ2pFO0FBQ0QsVUFBSSxPQUFPLEtBQUssSUFBSSxRQUFRLElBQUksS0FBSyxHQUFHLENBQUMsSUFBSSxLQUFLLEdBQUcsSUFBSSxDQUFDLE1BQU0sQ0FBQyxFQUFFO0FBQ2pFLGNBQU0sSUFBSSxLQUFLLENBQUMsb0JBQW9CLEdBQUcsS0FBSyxDQUFDLENBQUM7T0FDL0M7O0FBRUQsVUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDLFdBQVcsQ0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUM7S0FDM0M7OztXQUVRLG1CQUFDLEdBQUcsRUFBRTtBQUNiLFVBQU0sSUFBSSxHQUFHLDBCQUFTLENBQUMsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDO0FBQ2pDLFVBQU0sU0FBUyxHQUFHLGFBQWEsQ0FBQzs7QUFFaEMsVUFBSSxNQUFNLFlBQUEsQ0FBQztBQUNYLFVBQUksQ0FBQyxZQUFBLENBQUM7O0FBRU4sV0FBSyxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxJQUFJLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxFQUFFO0FBQ2hDLGNBQU0sR0FBRyxTQUFTLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO0FBQ2pDLFlBQUksTUFBTSxLQUFLLElBQUksRUFBRTtBQUNuQixpQkFBTyxRQUFRLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQyxFQUFDLEVBQUUsQ0FBQyxDQUFDO1NBQy9CO09BQ0Y7QUFDRCxhQUFPLElBQUksQ0FBQztLQUNiOzs7U0FqQ1EsZUFBRztBQUNWLGFBQU8sSUFBSSxDQUFDLE1BQU0sQ0FBQyxDQUFDO0tBQ3JCOzs7U0FFWSxlQUFHO0FBQ2QsYUFBTyxJQUFJLENBQUMsVUFBVSxDQUFDLENBQUM7S0FDekI7OztTQXZCVSxPQUFPIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlc0NvbnRlbnQiOlsiLypcblRoZSBNSVQgTGljZW5zZSAoTUlUKVxuXG5Db3B5cmlnaHQgKGMpIDIwMTQgQnJ5YW4gSHVnaGVzIDxicnlhbkB0aGVvcmV0aWNhbGlkZWF0aW9ucy5jb20+XG5cblBlcm1pc3Npb24gaXMgaGVyZWJ5IGdyYW50ZWQsIGZyZWUgb2YgY2hhcmdlLCB0byBhbnkgcGVyc29uIG9idGFpbmluZyBhIGNvcHlcbm9mIHRoaXMgc29mdHdhcmUgYW5kIGFzc29jaWF0ZWQgZG9jdW1lbnRhdGlvbiBmaWxlcyAodGhlIFwiU29mdHdhcmVcIiksIHRvIGRlYWxcbmluIHRoZSBTb2Z0d2FyZSB3aXRob3V0IHJlc3RyaWN0aW9uLCBpbmNsdWRpbmcgd2l0aG91dCBsaW1pdGF0aW9uIHRoZSByaWdodHNcbnRvIHVzZSwgY29weSwgbW9kaWZ5LCBtZXJnZSwgcHVibGlzaCwgZGlzdHJpYnV0ZSwgc3VibGljZW5zZSwgYW5kL29yIHNlbGxcbmNvcGllcyBvZiB0aGUgU29mdHdhcmUsIGFuZCB0byBwZXJtaXQgcGVyc29ucyB0byB3aG9tIHRoZSBTb2Z0d2FyZSBpc1xuZnVybmlzaGVkIHRvIGRvIHNvLCBzdWJqZWN0IHRvIHRoZSBmb2xsb3dpbmcgY29uZGl0aW9uczpcblxuVGhlIGFib3ZlIGNvcHlyaWdodCBub3RpY2UgYW5kIHRoaXMgcGVybWlzc2lvbiBub3RpY2Ugc2hhbGwgYmUgaW5jbHVkZWQgaW5cbmFsbCBjb3BpZXMgb3Igc3Vic3RhbnRpYWwgcG9ydGlvbnMgb2YgdGhlIFNvZnR3YXJlLlxuXG5USEUgU09GVFdBUkUgSVMgUFJPVklERUQgXCJBUyBJU1wiLCBXSVRIT1VUIFdBUlJBTlRZIE9GIEFOWSBLSU5ELCBFWFBSRVNTIE9SXG5JTVBMSUVELCBJTkNMVURJTkcgQlVUIE5PVCBMSU1JVEVEIFRPIFRIRSBXQVJSQU5USUVTIE9GIE1FUkNIQU5UQUJJTElUWSxcbkZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFIEFORCBOT05JTkZSSU5HRU1FTlQuIElOIE5PIEVWRU5UIFNIQUxMIFRIRVxuQVVUSE9SUyBPUiBDT1BZUklHSFQgSE9MREVSUyBCRSBMSUFCTEUgRk9SIEFOWSBDTEFJTSwgREFNQUdFUyBPUiBPVEhFUlxuTElBQklMSVRZLCBXSEVUSEVSIElOIEFOIEFDVElPTiBPRiBDT05UUkFDVCwgVE9SVCBPUiBPVEhFUldJU0UsIEFSSVNJTkcgRlJPTSxcbk9VVCBPRiBPUiBJTiBDT05ORUNUSU9OIFdJVEggVEhFIFNPRlRXQVJFIE9SIFRIRSBVU0UgT1IgT1RIRVIgREVBTElOR1MgSU5cblRIRSBTT0ZUV0FSRS5cbiovXG5cbmltcG9ydCB7IEdwaW8gfSBmcm9tICdwaWdwaW8nO1xuaW1wb3J0IHsgUGVyaXBoZXJhbCB9IGZyb20gJ3Jhc3BpLXBlcmlwaGVyYWwnO1xuaW1wb3J0IHsgZ2V0UGlucyB9IGZyb20gJ3Jhc3BpLWJvYXJkJztcblxuY29uc3QgX3B3bSA9IFN5bWJvbCgpO1xuY29uc3QgX3JhbmdlID0gU3ltYm9sKCk7XG5jb25zdCBfZnJlcXVlbmN5ID0gU3ltYm9sKCk7XG5cbmV4cG9ydCBjbGFzcyBTb2Z0UFdNIGV4dGVuZHMgUGVyaXBoZXJhbCB7XG4gIGNvbnN0cnVjdG9yKGNvbmZpZykge1xuICAgIGlmICh0eXBlb2YgY29uZmlnID09ICdudW1iZXInIHx8IHR5cGVvZiBjb25maWcgPT0gJ3N0cmluZycpIHtcbiAgICAgIGNvbmZpZyA9IHsgcGluOiBjb25maWcgfTtcbiAgICB9XG4gICAgY29uc3QgeyBwaW4sIGZyZXF1ZW5jeSA9IDgwMCwgcmFuZ2UgPSAyNTUgfSA9IGNvbmZpZztcbiAgICBpZiAodHlwZW9mIHBpbiA9PT0gJ3VuZGVmaW5lZCcpIHtcbiAgICAgIHRocm93IG5ldyBFcnJvcignQSBwaW4gbXVzdCBiZSBzcGVjaWZpZWQnKTtcbiAgICB9XG4gICAgc3VwZXIocGluKTtcbiAgICB0aGlzW19yYW5nZV0gPSByYW5nZTtcbiAgICB0aGlzW19mcmVxdWVuY3ldID0gZnJlcXVlbmN5O1xuICAgIHRoaXNbX3B3bV0gPSBuZXcgR3Bpbyh0aGlzLnBpblRvR1BJTyh0aGlzLnBpbnNbMF0pLCB7bW9kZTogR3Bpby5PVVRQVVR9KTtcbiAgICB0aGlzW19wd21dLnB3bVJhbmdlKHJhbmdlKTtcbiAgICB0aGlzW19wd21dLnB3bUZyZXF1ZW5jeShmcmVxdWVuY3kpO1xuICB9XG5cbiAgZ2V0IHJhbmdlKCkge1xuICAgIHJldHVybiB0aGlzW19yYW5nZV07XG4gIH1cblxuICBnZXQgZnJlcXVlbmN5KCkge1xuICAgIHJldHVybiB0aGlzW19mcmVxdWVuY3ldO1xuICB9XG5cbiAgd3JpdGUodmFsdWUpIHtcbiAgICBpZiAoIXRoaXMuYWxpdmUpIHtcbiAgICAgIHRocm93IG5ldyBFcnJvcignQXR0ZW1wdGVkIHRvIHdyaXRlIHRvIGEgZGVzdHJveWVkIHBlcmlwaGVyYWwnKTtcbiAgICB9XG4gICAgaWYgKHR5cGVvZiB2YWx1ZSAhPSAnbnVtYmVyJyB8fCB2YWx1ZSA8IDAgfHwgdmFsdWUgPiB0aGlzW19yYW5nZV0pIHtcbiAgICAgIHRocm93IG5ldyBFcnJvcignSW52YWxpZCBQV00gdmFsdWUgJyArIHZhbHVlKTtcbiAgICB9XG5cbiAgICB0aGlzW19wd21dLmFuYWxvZ1dyaXRlKE1hdGgucm91bmQodmFsdWUpKTtcbiAgfVxuXG4gIHBpblRvR1BJTyhwaW4pIHtcbiAgICBjb25zdCBwaW5zID0gZ2V0UGlucygpW3Bpbl0ucGlucztcbiAgICBjb25zdCBncGlvUmVnZXggPSAvR1BJTyhbXFxkXSspLztcblxuICAgIGxldCByZXN1bHQ7XG4gICAgbGV0IGk7XG5cbiAgICBmb3IgKGkgPSAwOyBpIDwgcGlucy5sZW5ndGg7IGkrKykge1xuICAgICAgcmVzdWx0ID0gZ3Bpb1JlZ2V4LmV4ZWMocGluc1tpXSk7XG4gICAgICBpZiAocmVzdWx0ICE9PSBudWxsKSB7XG4gICAgICAgIHJldHVybiBwYXJzZUludChyZXN1bHRbMV0sMTApO1xuICAgICAgfVxuICAgIH1cbiAgICByZXR1cm4gbnVsbDtcbiAgfVxuXG59XG4iXSwic291cmNlUm9vdCI6Ii9zb3VyY2UvIn0=
+diff --git a/package.json b/package.json
+index 99295cf..18f51b4 100644
+--- a/package.json
++++ b/package.json
+@@ -1,24 +1,24 @@
+ {
+   "name": "raspi-soft-pwm",
+-  "version": "2.0.2",
++  "version": "3.0.0",
+   "description": "Provides access to Soft PWM on the Raspberry Pi as part of the Raspi.js library suite",
+-  "main": "lib/index.js",
++  "main": "dist/index.js",
++  "types": "./declarations/index.d.ts",
+   "dependencies": {
+-    "pigpio": "^0.3.2",
+-    "raspi-peripheral": "^1.6.1"
++    "raspi-peripheral": "^1.6.3",
++    "raspi-board": "^4.2.0",
++    "pigpio": "^0.5.1"
+   },
+   "devDependencies": {
+-    "del": "^2.0.2",
+-    "gulp": "^3.9.0",
+-    "gulp-babel": "^5.2.1",
+-    "gulp-eslint": "^1.0.0",
+-    "gulp-sourcemaps": "^1.6.0",
+-    "gulp-watch": "^4.3.5"
++    "@types/node": "^7.0.13",
++    "@types/pigpio": "^0.4.1",
++    "tslint": "^5.1.0",
++    "typescript": "^2.2.2"
+   },
+   "scripts": {
+-    "test": "echo \"Error: no test specified\" && exit 1",
+-    "preinstall": "sh install-pigpio.sh",
+-    "build": "gulp"
++    "prebuild": "tslint src/**/*.ts",
++    "build": "tsc",
++    "test": "echo \"Error: no test specified\" && exit 1"
+   },
+   "repository": {
+     "type": "git",
+diff --git a/script/pigpio.sh b/script/pigpio.sh
+new file mode 100644
+index 0000000..7ebf4fa
+--- /dev/null
++++ b/script/pigpio.sh
+@@ -0,0 +1,37 @@
++#!/bin/sh
++# The MIT License (MIT)
++#
++# Copyright (c) 2017 Bryan Hughes <bryan@nebri.us>
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in all
++# copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++
++# Quick and dirty check to see if we're on a Raspberry Pi or not
++if ! [ -f /proc/cpuinfo ]; then
++  echo "not on a Raspberry Pi, skipping installation"
++  exit 0
++fi
++
++if command -v pigpiod -v >/dev/null 2>&1
++then
++  echo "pigpio is already installed, skipping installation"
++  exit 0
++fi
++
++echo "pigpio doesn't appear to be installed, installing now. You may be asked for your password."
++sudo apt-get install pigpio
+diff --git a/src/index.ts b/src/index.ts
+new file mode 100755
+index 0000000..cbb3d1e
+--- /dev/null
++++ b/src/index.ts
+@@ -0,0 +1,104 @@
++/*
++The MIT License (MIT)
++
++Copyright (c) 2016 Tiago Alves <tralves@gmail.com>
++
++Permission is hereby granted, free of charge, to any person obtaining a copy
++of this software and associated documentation files (the "Software"), to deal
++in the Software without restriction, including without limitation the rights
++to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++copies of the Software, and to permit persons to whom the Software is
++furnished to do so, subject to the following conditions:
++
++The above copyright notice and this permission notice shall be included in
++all copies or substantial portions of the Software.
++
++THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
++THE SOFTWARE.
++*/
++
++import { Gpio } from 'pigpio';
++import { Peripheral } from 'raspi-peripheral';
++import { getGpioNumber } from 'raspi-board';
++
++export interface IConfig {
++  pin: number | string;
++  frequency?: number;
++  range?: number;
++}
++
++const DEFAULT_FREQUENCY = 50;
++const DEFAULT_RANGE = 40000;
++
++export class SoftPWM extends Peripheral {
++
++  private _pwm: Gpio;
++  private _frequency: number;
++  private _range: number;
++  private _dutyCycle: number;
++
++  public get frequency() {
++    return this._frequency;
++  }
++
++  public get range() {
++    return this._range;
++  }
++
++  public get dutyCycle() {
++    return this._dutyCycle;
++  }
++
++  constructor(config: number | string | IConfig) {
++    let pin: number | string;
++    let frequency = DEFAULT_FREQUENCY;
++    let range = DEFAULT_RANGE;
++    if (typeof config === 'number' || typeof config === 'string') {
++      pin = config;
++    } else if (typeof config === 'object') {
++      if (typeof config.pin === 'number' || typeof config.pin === 'string') {
++        pin = config.pin;
++      } else {
++        throw new Error(`Invalid pin "${config.pin}". Pin must a number or string`);
++      }
++      if (typeof config.frequency === 'number') {
++        frequency = config.frequency;
++      }
++      if (typeof config.range === 'number') {
++        range = config.range;
++      }
++    } else {
++      throw new Error('Invalid config, must be a number, string, or object');
++    }
++    super(pin);
++
++    const gpioPin = getGpioNumber(pin);
++    if (gpioPin === null) {
++      throw new Error(`Internal error: ${pin} was parsed as a valid pin, but couldn't be resolved to a GPIO pin`);
++    }
++
++    this._frequency = frequency;
++    this._range = range;
++    this._dutyCycle = 0;
++    this._pwm = new Gpio(gpioPin, { mode: Gpio.OUTPUT });
++    this._pwm.pwmFrequency(frequency);
++    this._pwm.pwmRange(range);
++  }
++
++  public write(dutyCycle: number) {
++    if (!this.alive) {
++      throw new Error('Attempted to write to a destroyed peripheral');
++    }
++    if (typeof dutyCycle !== 'number' || dutyCycle < 0 || dutyCycle > 1) {
++      throw new Error(`Invalid PWM duty cycle "${dutyCycle}"`);
++    }
++    this._dutyCycle = dutyCycle;
++    this._pwm.pwmWrite(Math.round(this._dutyCycle * this._range));
++  }
++
++}
+diff --git a/tsconfig.json b/tsconfig.json
+new file mode 100644
+index 0000000..0afce6a
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,17 @@
++{
++    "compilerOptions": {
++        "module": "commonjs",
++        "target": "es5",
++        "noImplicitAny": true,
++        "sourceMap": true,
++        "outDir": "dist",
++        "declaration": true,
++        "declarationDir": "declarations",
++        "strictNullChecks": true,
++        "noUnusedParameters": true,
++        "noUnusedLocals": true
++    },
++    "include": [
++        "src/**/*.ts"
++    ]
++}
+diff --git a/tslint.json b/tslint.json
+new file mode 100644
+index 0000000..83d0923
+--- /dev/null
++++ b/tslint.json
+@@ -0,0 +1,56 @@
++{
++    "rules": {
++        "class-name": true,
++        "comment-format": [ true, "check-space" ],
++        "indent": [ true, "spaces" ],
++        "no-eval": true,
++        "no-internal-module": true,
++        "no-trailing-whitespace": true,
++        "no-unsafe-finally": true,
++        "no-var-keyword": true,
++        "one-line": [ true, "check-open-brace", "check-whitespace" ],
++        "quotemark": [ true, "single" ],
++        "semicolon": [ true, "always" ],
++        "triple-equals": [ true, "allow-null-check" ],
++        "typedef-whitespace": [
++            true, {
++                "call-signature": "nospace",
++                "index-signature": "nospace",
++                "parameter": "nospace",
++                "property-declaration": "nospace",
++                "variable-declaration": "nospace"
++            }, {
++                "call-signature": "onespace",
++                "index-signature": "onespace",
++                "parameter": "onespace",
++                "property-declaration": "onespace",
++                "variable-declaration": "onespace"
++            }
++        ],
++        "variable-name": [ true, "ban-keywords" ],
++        "whitespace": [
++            true,
++            "check-branch",
++            "check-decl",
++            "check-operator",
++            "check-separator",
++            "check-type"
++        ],
++        "curly": true,
++        "no-debugger": true,
++        "no-duplicate-variable": true,
++        "no-invalid-this": true,
++        "no-shadowed-variable": true,
++        "no-string-literal": true,
++        "no-unused-expression": true,
++        "use-isnan": true,
++        "eofline": true,
++        "linebreak-style": [ true, "LF" ],
++        "no-require-imports": true,
++        "trailing-comma": [ true, { "multiline": "never", "singleline": "never" } ],
++        "arrow-parens": true,
++        "interface-name": [ true, "always-prefix" ],
++        "new-parens": true,
++        "object-literal-shorthand": true
++    }
++}
+\ No newline at end of file
+-- 
+2.3.8 (Apple Git-58)
+
