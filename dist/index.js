@@ -1,7 +1,8 @@
+"use strict";
 /*
 The MIT License (MIT)
 
-Copyright (c) 2016 Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
+Copyright (c) 2014-2017 Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -38,7 +38,7 @@ var raspi_peripheral_1 = require("raspi-peripheral");
 var raspi_board_1 = require("raspi-board");
 var DEFAULT_FREQUENCY = 50;
 var DEFAULT_RANGE = 40000;
-var SoftPWM = (function (_super) {
+var SoftPWM = /** @class */ (function (_super) {
     __extends(SoftPWM, _super);
     function SoftPWM(config) {
         var _this = this;
