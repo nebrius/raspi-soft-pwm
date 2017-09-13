@@ -35,10 +35,10 @@ In TypeScript/ES6:
 
 ```TypeScript
 import { init } from 'raspi';
-import { PWM } from 'raspi-pwm';
+import { SoftPWM } from 'raspi-soft-pwm';
 
 init(() => {
-  const led = new PWM('GPIO22');
+  const led = new SoftPWM('GPIO22');
   led.write(0.5); // 50% Duty Cycle, half brightness
 });
 ```
@@ -47,10 +47,10 @@ In JavaScript:
 
 ```JavaScript
 const raspi = require('raspi');
-const pwm = require('raspi-pwm');
+const pwm = require('raspi-soft-pwm');
 
 raspi.init(() => {
-  const led = new pwm.PWM('GPIO22');
+  const led = new pwm.SoftPWM('GPIO22');
   led.write(0.5); // 50% Duty Cycle, aka half brightness
 });
 ```

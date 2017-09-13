@@ -1,3 +1,7 @@
+## 4.0.1 (2017-9-12)
+
+- Updated dependencies. The breaking changes in dependencies do not break the behavior of this module.
+
 ## 4.0.0 (2017-9-12)
 
 - BREAKING CHANGE: dropped support for Node.js < 4.0.0, and now enforce it via package.json "engines" field.
