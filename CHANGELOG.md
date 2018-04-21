@@ -1,3 +1,8 @@
+## 5.0.0 (2018-4-21)
+
+- Updated to pigpio 1
+- BREAKING CHANGE: Dropped support for Node 4.
+
 ## 4.0.1 (2017-9-12)
 
 - Updated dependencies. The breaking changes in dependencies do not break the behavior of this module.
