@@ -1,7 +1,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2014-2017 Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
+Copyright (c) Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,14 @@ THE SOFTWARE.
 import { Gpio } from 'pigpio';
 import { Peripheral } from 'raspi-peripheral';
 import { getGpioNumber } from 'raspi-board';
-
-export interface IConfig {
-  pin: number | string;
-  frequency?: number;
-  range?: number;
-}
+import { IPWM, IPWMModule, IPWMConfig } from 'core-io-types';
 
 const DEFAULT_FREQUENCY = 50;
 const DEFAULT_RANGE = 40000;
 
-export class SoftPWM extends Peripheral {
+export { IPWMConfig } from 'core-io-types';
+
+export class SoftPWM extends Peripheral implements IPWM {
 
   private _pwm: Gpio;
   private _frequency: number;
@@ -54,7 +51,7 @@ export class SoftPWM extends Peripheral {
     return this._dutyCycle;
   }
 
-  constructor(config: number | string | IConfig) {
+  constructor(config: number | string | IPWMConfig) {
     let pin: number | string;
     let frequency = DEFAULT_FREQUENCY;
     let range = DEFAULT_RANGE;
@@ -102,3 +99,9 @@ export class SoftPWM extends Peripheral {
   }
 
 }
+
+export const module: IPWMModule = {
+  createPWM(config: number | string | IPWMConfig) {
+    return new SoftPWM(config);
+  }
+};

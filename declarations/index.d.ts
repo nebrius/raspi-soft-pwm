@@ -1,10 +1,7 @@
 import { Peripheral } from 'raspi-peripheral';
-export interface IConfig {
-    pin: number | string;
-    frequency?: number;
-    range?: number;
-}
-export declare class SoftPWM extends Peripheral {
+import { IPWM, IPWMModule, IPWMConfig } from 'core-io-types';
+export { IPWMConfig } from 'core-io-types';
+export declare class SoftPWM extends Peripheral implements IPWM {
     private _pwm;
     private _frequency;
     private _range;
@@ -12,6 +9,7 @@ export declare class SoftPWM extends Peripheral {
     readonly frequency: number;
     readonly range: number;
     readonly dutyCycle: number;
-    constructor(config: number | string | IConfig);
+    constructor(config: number | string | IPWMConfig);
     write(dutyCycle: number): void;
 }
+export declare const module: IPWMModule;

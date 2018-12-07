@@ -65,6 +65,38 @@ Be sure to read the [full list of pins](https://github.com/nebrius/raspi-io/wiki
 
 ## API
 
+### Module Constants
+
+<table>
+  <thead>
+    <tr>
+      <th>Constant</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tr>
+    <td>module</td>
+    <td>An easily consumable object for indirectly passing this module around. Intended specifically for use by Core IO (details coming soon)</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>createPWM(config)</td>
+        <tr>Function</tr>
+        <td>Pass through for the <a href="#new-softpwmconfig">PWM constructor</a></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+
 ### new SoftPWM(config)
 
 Instantiates a new PWM instance on the given pin.
@@ -153,7 +185,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2017 Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
+Copyright (c) Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

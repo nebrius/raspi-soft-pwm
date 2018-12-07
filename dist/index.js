@@ -2,7 +2,7 @@
 /*
 The MIT License (MIT)
 
-Copyright (c) 2014-2017 Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
+Copyright (c) Tiago Alves <tralves@gmail.com> and Bryan Hughes <bryan@nebri.us>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,26 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var pigpio_1 = require("pigpio");
-var raspi_peripheral_1 = require("raspi-peripheral");
-var raspi_board_1 = require("raspi-board");
-var DEFAULT_FREQUENCY = 50;
-var DEFAULT_RANGE = 40000;
-var SoftPWM = /** @class */ (function (_super) {
-    __extends(SoftPWM, _super);
-    function SoftPWM(config) {
-        var _this = this;
-        var pin;
-        var frequency = DEFAULT_FREQUENCY;
-        var range = DEFAULT_RANGE;
+const pigpio_1 = require("pigpio");
+const raspi_peripheral_1 = require("raspi-peripheral");
+const raspi_board_1 = require("raspi-board");
+const DEFAULT_FREQUENCY = 50;
+const DEFAULT_RANGE = 40000;
+class SoftPWM extends raspi_peripheral_1.Peripheral {
+    get frequency() {
+        return this._frequency;
+    }
+    get range() {
+        return this._range;
+    }
+    get dutyCycle() {
+        return this._dutyCycle;
+    }
+    constructor(config) {
+        let pin;
+        let frequency = DEFAULT_FREQUENCY;
+        let range = DEFAULT_RANGE;
         if (typeof config === 'number' || typeof config === 'string') {
             pin = config;
         }
@@ -53,7 +50,7 @@ var SoftPWM = /** @class */ (function (_super) {
                 pin = config.pin;
             }
             else {
-                throw new Error("Invalid pin \"" + config.pin + "\". Pin must a number or string");
+                throw new Error(`Invalid pin "${config.pin}". Pin must a number or string`);
             }
             if (typeof config.frequency === 'number') {
                 frequency = config.frequency;
@@ -65,51 +62,33 @@ var SoftPWM = /** @class */ (function (_super) {
         else {
             throw new Error('Invalid config, must be a number, string, or object');
         }
-        _this = _super.call(this, pin) || this;
-        var gpioPin = raspi_board_1.getGpioNumber(pin);
+        super(pin);
+        const gpioPin = raspi_board_1.getGpioNumber(pin);
         if (gpioPin === null) {
-            throw new Error("Internal error: " + pin + " was parsed as a valid pin, but couldn't be resolved to a GPIO pin");
+            throw new Error(`Internal error: ${pin} was parsed as a valid pin, but couldn't be resolved to a GPIO pin`);
         }
-        _this._frequency = frequency;
-        _this._range = range;
-        _this._dutyCycle = 0;
-        _this._pwm = new pigpio_1.Gpio(gpioPin, { mode: pigpio_1.Gpio.OUTPUT });
-        _this._pwm.pwmFrequency(frequency);
-        _this._pwm.pwmRange(range);
-        return _this;
+        this._frequency = frequency;
+        this._range = range;
+        this._dutyCycle = 0;
+        this._pwm = new pigpio_1.Gpio(gpioPin, { mode: pigpio_1.Gpio.OUTPUT });
+        this._pwm.pwmFrequency(frequency);
+        this._pwm.pwmRange(range);
     }
-    Object.defineProperty(SoftPWM.prototype, "frequency", {
-        get: function () {
-            return this._frequency;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SoftPWM.prototype, "range", {
-        get: function () {
-            return this._range;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(SoftPWM.prototype, "dutyCycle", {
-        get: function () {
-            return this._dutyCycle;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SoftPWM.prototype.write = function (dutyCycle) {
+    write(dutyCycle) {
         if (!this.alive) {
             throw new Error('Attempted to write to a destroyed peripheral');
         }
         if (typeof dutyCycle !== 'number' || dutyCycle < 0 || dutyCycle > 1) {
-            throw new Error("Invalid PWM duty cycle \"" + dutyCycle + "\"");
+            throw new Error(`Invalid PWM duty cycle "${dutyCycle}"`);
         }
         this._dutyCycle = dutyCycle;
         this._pwm.pwmWrite(Math.round(this._dutyCycle * this._range));
-    };
-    return SoftPWM;
-}(raspi_peripheral_1.Peripheral));
+    }
+}
 exports.SoftPWM = SoftPWM;
+exports.module = {
+    createPWM(config) {
+        return new SoftPWM(config);
+    }
+};
 //# sourceMappingURL=index.js.map
