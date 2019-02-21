@@ -25,12 +25,12 @@ THE SOFTWARE.
 import { Gpio } from 'pigpio';
 import { Peripheral } from 'raspi-peripheral';
 import { getGpioNumber } from 'raspi-board';
-import { IPWM, IPWMModule, IPWMConfig } from 'core-io-types';
+import { IPWM, IPWMModule, IPWMConfig } from 'j5-io-types';
 
 const DEFAULT_FREQUENCY = 50;
 const DEFAULT_RANGE = 40000;
 
-export { IPWMConfig } from 'core-io-types';
+export { IPWMConfig } from 'j5-io-types';
 
 export class SoftPWM extends Peripheral implements IPWM {
 

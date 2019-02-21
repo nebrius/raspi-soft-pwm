@@ -1,6 +1,6 @@
 import { Peripheral } from 'raspi-peripheral';
-import { IPWM, IPWMModule, IPWMConfig } from 'core-io-types';
-export { IPWMConfig } from 'core-io-types';
+import { IPWM, IPWMModule, IPWMConfig } from 'j5-io-types';
+export { IPWMConfig } from 'j5-io-types';
 export declare class SoftPWM extends Peripheral implements IPWM {
     private _pwm;
     private _frequency;
