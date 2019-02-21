@@ -1,6 +1,6 @@
 {
   "name": "raspi-soft-pwm",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Provides access to Soft PWM on the Raspberry Pi as part of the Raspi.js library suite",
   "main": "dist/index.js",
   "types": "./declarations/index.d.ts",
@@ -32,17 +32,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tralves/raspi-soft-pwm.git"
+    "url": "https://github.com/nebrius/raspi-soft-pwm.git"
   },
   "keywords": [
     "nodebots",
     "robotics",
     "raspberry pi"
   ],
-  "author": "Tiago Alves <tralves@gmail.com>",
+  "author": "Bryan Hughes <bryan@nebri.us>",
+  "contributors": [
+    {
+      "name": "Bryan Hughes",
+      "email": "bryan@nebri.us"
+    },
+    {
+      "name": "Tiago Alves",
+      "email": "tralves@gmail.com"
+    }
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tralves/raspi-soft-pwm/issues"
+    "url": "https://github.com/nebrius/raspi-soft-pwm/issues"
   },
-  "homepage": "https://github.com/tralves/raspi-soft-pwm"
+  "homepage": "https://github.com/nebrius/raspi-soft-pwm"
 }

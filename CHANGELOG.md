@@ -1,3 +1,7 @@
+## 6.0.1 (2019-2-21)
+
+- Fixed some outdated package.json info
+
 ## 6.0.0 (2019-2-21)
 
 - BREAKING CHANGE: Changed the pigpio clock mode from PCM to PWM.
