@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import { Gpio } from 'pigpio';
+import { Gpio, configureClock, CLOCK_PWM } from 'pigpio';
 import { Peripheral } from 'raspi-peripheral';
 import { getGpioNumber } from 'raspi-board';
 import { IPWM, IPWMModule, IPWMConfig } from 'j5-io-types';
@@ -31,6 +31,9 @@ const DEFAULT_FREQUENCY = 50;
 const DEFAULT_RANGE = 40000;
 
 export { IPWMConfig } from 'j5-io-types';
+
+// Tell it to use the PWM clock for timing so that I2S still works. This does mean we can't use hardare PWM though.
+configureClock(5, CLOCK_PWM);
 
 export class SoftPWM extends Peripheral implements IPWM {
 

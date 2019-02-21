@@ -28,6 +28,8 @@ const raspi_peripheral_1 = require("raspi-peripheral");
 const raspi_board_1 = require("raspi-board");
 const DEFAULT_FREQUENCY = 50;
 const DEFAULT_RANGE = 40000;
+// Tell it to use the PWM clock for timing so that I2S still works. This does mean we can't use hardare PWM though.
+pigpio_1.configureClock(5, pigpio_1.CLOCK_PWM);
 class SoftPWM extends raspi_peripheral_1.Peripheral {
     get frequency() {
         return this._frequency;

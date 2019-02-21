@@ -1,3 +1,9 @@
+## 6.0.0 (2019-2-21)
+
+- BREAKING CHANGE: Changed the pigpio clock mode from PCM to PWM.
+    - This allows I2S to be used alongside this module
+    - This means that hardware PWM DOES NOT WORK. In other words, you cannot use this module alongside [raspi-pwm](https://github.com/nebrius/raspi-pwm), which Raspi IO used to do prior to version 10.0.0.
+
 ## 5.1.1 (2019-2-20)
 
 - Updated dependencies
